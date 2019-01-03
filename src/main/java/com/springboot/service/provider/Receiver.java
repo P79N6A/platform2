@@ -42,6 +42,7 @@ public class Receiver {
         Student student=(Student) JaXmlBeanUtil.parseXmlToBean(Student.class,studentxml);
         int i = studentService.add(student);*/
         int i=sourceMsgService.add(sourceMsg);
+
         String result;
         if (i == 1) {
             result = " platform add into db success!";

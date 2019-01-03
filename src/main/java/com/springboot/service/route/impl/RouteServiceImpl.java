@@ -5,6 +5,7 @@ import com.springboot.model.route.RouteMsg;
 import com.springboot.model.route.RouteRule;
 import com.springboot.model.route.SourceMsg;
 import com.springboot.service.pubsub.Publisher;
+import com.springboot.service.route.RouteMsgService;
 import com.springboot.service.route.RouteService;
 import com.springboot.service.send.HengShuiTCPClientService;
 import com.springboot.util.JaXmlBeanUtil;
@@ -24,6 +25,8 @@ public class RouteServiceImpl implements RouteService {
     RedisConfig redisConfig;
     @Autowired
     HengShuiTCPClientService hengShuiTcpClientService;
+    @Autowired
+    RouteMsgService routeMsgService;
     @Override
     public String process(String reqxml) {
         Logger logger= LoggerFactory.getLogger(this.getClass());
@@ -47,7 +50,12 @@ public class RouteServiceImpl implements RouteService {
             routeMsg.setPlatformCode("xujin001");
             routeMsg.setMsg(studentxml);
             String nextReqxml=JaXmlBeanUtil.parseBeanToXml(RouteMsg.class,routeMsg);
-
+            int i=routeMsgService.addRouteMsg(routeMsg);
+            if(i==0){
+                logger.info("platform add routemsg success");
+            }else{
+                logger.info("platform add routemsg faik!");
+            }
             if(destBank.equals("HengShuiBank")) {
                 try {
                     result=hengShuiTcpClientService.transportOut(nextReqxml);
@@ -55,6 +63,7 @@ public class RouteServiceImpl implements RouteService {
                     logger.error(e.getMessage());
                 }
             }
+
 
 
         }

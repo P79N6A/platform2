@@ -86,12 +86,14 @@ public class SocketServer {
                              LOGGER.error("银行处理完毕后回复场景平台出错，出错信息："+e.getMessage());
                          }
                      }*/
-
-                    byte[] bstream = result.getBytes("GBK");  //转化为字节流
-                    os = socket.getOutputStream();   //输出流
-                    os.write(bstream);
-                    os.flush();//调用flush()方法将缓冲输出
-
+                    if(!result.equals("")) {
+                        byte[] bstream = result.getBytes("GBK");  //转化为字节流
+                        os = socket.getOutputStream();   //输出流
+                        os.write(bstream);
+                        os.flush();//调用flush()方法将缓冲输出
+                    }else{
+                        LOGGER.info("from bank return blank info");
+                    }
 
                 } catch (IOException e) {
                     LOGGER.error(e.getMessage());
