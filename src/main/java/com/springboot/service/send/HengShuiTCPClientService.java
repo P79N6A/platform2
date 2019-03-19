@@ -1,3 +1,4 @@
+/*
 package com.springboot.service.send;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -13,25 +14,29 @@ import java.net.Socket;
 
 @Service
 public class HengShuiTCPClientService {
-   /* @Autowired
-    @Qualifier("destSocket")
-    Socket dstsck;*/
 
-    @Value("${destSocketServer.port}")
-    /**
-     端口号
-     */
+
+    @Value("${hsdestSocketServer.port}")
+    */
+/**
+     端口号`
+     *//*
+
     public  int port;
-    @Value("${destSocketServer.IP}")
-    /**
+    @Value("${hsdestSocketServer.IP}")
+    */
+/**
      * 服务器端ip地址
-     */
+     *//*
+
     public  String ip;
     public String transportOut(String msg) throws IOException{
         //1.建立TCP连接
-       /* String ip="localhost";   //服务器端ip地址
+       */
+/* String ip="localhost";   //服务器端ip地址
         int port=5001;        //端口号
-        Socket sck=new Socket(ip,port);*/
+        Socket sck=new Socket(ip,port);*//*
+
         //2.传输内容
 
         Socket dstsck = new Socket(ip, port);
@@ -52,9 +57,10 @@ public class HengShuiTCPClientService {
             while ((len = is.read(buff)) != -1) {
                 all = ArrayUtils.addAll(all, ArrayUtils.subarray(buff, 0, len));
             }
+            //dstsck.shutdownInput();//关闭输入流
             resp = new String(all, "gbk");
 
-            System.out.println("from socketServer[" + ip + ":" + port + "] :" + resp);
+            System.out.println("platform from socketServer[" + ip + ":" + port + "] :" + resp);
 
 
         }catch(Exception e){
@@ -62,9 +68,7 @@ public class HengShuiTCPClientService {
         }finally {
             //关闭资源
             try {
-                if(dstsck!=null){
-                    dstsck.close();
-                }
+
                 if(os!=null) {
                     os.close();
                 }
@@ -81,3 +85,4 @@ public class HengShuiTCPClientService {
     }
 }
 
+*/

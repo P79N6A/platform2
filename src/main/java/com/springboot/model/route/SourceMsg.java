@@ -1,6 +1,5 @@
 package com.springboot.model.route;
 
-import com.springboot.model.bean.XmlElementAnno;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -12,12 +11,18 @@ import java.io.Serializable;
 @Data
 @XmlRootElement(name = "sourcemsg")
 public class SourceMsg implements Serializable {
+    @XmlElement(name = "channel")
+    @Column(name = "channel")
+    @XmlElementAnno
+    String channel;
+
+
     @XmlElement(name = "channelDate")
     @Column(name = "channelDate")
-    @XmlElementAnno
     //渠道交易日期,格式为 YYYYMMDD
+    @XmlElementAnno
     String channelDate;
-    //渠道交易时间，格式为 HHMMSSNNN
+    //格式为 HHMMSSNNN
     @Column(name = "channelTime")
     @XmlElement(name = "channelTime")
     @XmlElementAnno
@@ -32,14 +37,47 @@ public class SourceMsg implements Serializable {
     @Column(name = "channelCode")
     @XmlElementAnno
     String channelCode;
+
+
     @XmlElement(name = "msg")
     @Column(name = "msg")
     @XmlElementAnno
     String msg;
 
+    @XmlElement(name = "material")
+    @Column(name = "material")
+    @XmlElementAnno
+    String material;
+
+    @XmlElement(name = "result")
+    @Column(name = "result")
+    @XmlElementAnno
+    String result;
+
+    @XmlElement(name = "callbackUrl")
+    @Column(name = "callbackUrl")
+    @XmlElementAnno
+    String callbackUrl;
+
+    @XmlTransient
+    public String getCallbackUrl() {
+        return callbackUrl;
+    }
+    @XmlTransient
+    public String getChannel() {
+        return channel;
+    }
     @XmlTransient
     public String getMsg() {
         return msg;
+    }
+    @XmlTransient
+    public String getResult() {
+        return result;
+    }
+    @XmlTransient
+    public String getMaterial() {
+        return material;
     }
     @XmlTransient
     public String getChannelCode() {
@@ -73,5 +111,14 @@ public class SourceMsg implements Serializable {
 
     public void setMsg(String msg) {
         this.msg = msg;
+    }
+    public void setMaterial(String material) {
+        this.material = material;
+    }
+    public void setCallbackUrl(String callbackUrl) {
+        this.callbackUrl = callbackUrl;
+    }
+    public void setResult(String result) {
+        this.result = result;
     }
 }

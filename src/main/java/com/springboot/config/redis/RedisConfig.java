@@ -2,6 +2,7 @@ package com.springboot.config.redis;
 
 
 import com.springboot.service.provider.Receiver;
+import com.springboot.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,16 @@ import java.util.concurrent.CountDownLatch;
 public class RedisConfig extends CachingConfigurerSupport {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(RedisConfig.class);
+    /**
+     * 监听平台正在处理中队列
+     */
+    @Value("${PLATFORM_CHANNEL_NAME_Processing}")
+    String PLATFORM_CHANNEL_NAME_Processing;
+    /**
+     * 监听已处理队列
+     */
+    @Value("${PLATFORM_CHANNEL_NAME_Processed}")
+    String PLATFORM_CHANNEL_NAME_Processed;
 
     @Value("${spring.redis.database}")
     private Long database;
@@ -56,7 +67,7 @@ public class RedisConfig extends CachingConfigurerSupport {
     private int masterPort;
     @Value("${spring.redis.master.name}")
     private String masterName;
-
+/*
     @Value("${spring.redis.slave1.host}")
     private String slave1Host;
     @Value("${spring.redis.slave1.port}")
@@ -65,7 +76,7 @@ public class RedisConfig extends CachingConfigurerSupport {
     @Value("${spring.redis.slave2.host}")
     private String slave2Host;
     @Value("${spring.redis.slave2.port}")
-    private int slave2Port;
+    private int slave2Port;*/
 
     @Value("${spring.redis.password}")
     private String password;
@@ -82,7 +93,7 @@ public class RedisConfig extends CachingConfigurerSupport {
     private int timeout;
 
 
-    @Value("${spring.redis.sentinel1.host}")
+    /*@Value("${spring.redis.sentinel1.host}")
     private String sentinel1Host;
     @Value("${spring.redis.sentinel1.port}")
     private int sentinel1port;
@@ -93,13 +104,20 @@ public class RedisConfig extends CachingConfigurerSupport {
     @Value("${spring.redis.sentinel3.host}")
     private String sentinel3Host;
     @Value("${spring.redis.sentinel3.port}")
-    private int sentinel3port;
+    private int sentinel3port;*/
     @Value("${spring.countDownLatch}")
     private int latch;
+    @Value("${initRedis.needed}")
+    private boolean needInitRedis;
+    @Value("${initRedis.configFile}")
+    private String configFile;
     @Autowired
     private RedisProperties redisProperties;
     public JedisPool jedisPool;
-    // 自定义缓存key生成策略
+
+    /**
+     * 自定义缓存key生成策略
+     */
     @Bean
     @Override
     public KeyGenerator keyGenerator() {
@@ -117,7 +135,9 @@ public class RedisConfig extends CachingConfigurerSupport {
         };
     }
 
-    // 缓存管理器
+    /**
+     * 缓存管理器
+     */
     @Bean
     public CacheManager cacheManager(@SuppressWarnings("rawtypes") RedisTemplate redisTemplate) {
         RedisCacheManager cacheManager = new RedisCacheManager(redisTemplate);
@@ -125,14 +145,15 @@ public class RedisConfig extends CachingConfigurerSupport {
         cacheManager.setDefaultExpiration(10000);
         return cacheManager;
     }
-/*
+    /**
     @Bean
     public RedisTemplate<String,String> redisTemplate(RedisConnectionFactory factory) {
         StringRedisTemplate template = new StringRedisTemplate(factory);
         setSerializer(template);// 设置序列化工具
         template.afterPropertiesSet();
         return template;
-    }*/
+    }
+     */
     @Bean
     public RedisTemplate<String, Object> redisTemplate2(RedisConnectionFactory redisConnectionFactory)
     {
@@ -151,37 +172,43 @@ public class RedisConfig extends CachingConfigurerSupport {
         return template;
     }
 
-
-
-
-
     @Bean
     Receiver receiver(CountDownLatch latch) {
         return new Receiver(latch);
     }
 
-    //必要的redis消息队列连接工厂
+    /**
+     * 必要的redis消息队列连接工厂
+     */
     @Bean
     CountDownLatch latch() {
         return new CountDownLatch(latch);
     }
 
-    //redis模板
+    /**
+     * redis模板
+     */
     @Bean("stringRedisTemplate")
     StringRedisTemplate template(RedisConnectionFactory connectionFactory) {
         return new StringRedisTemplate(connectionFactory);
     }
 
-    //注入消息监听器容器
+    /**
+     * 注入消息监听器容器
+     */
     @Bean
     RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
+       container.addMessageListener(listenerAdapter, new PatternTopic(PLATFORM_CHANNEL_NAME_Processing));
+        container.addMessageListener(listenerAdapter, new PatternTopic(PLATFORM_CHANNEL_NAME_Processed));
         container.addMessageListener(listenerAdapter, new PatternTopic("msg"));
         return container;
     }
 
-    //注入消息监听器容器
+    /**
+     * 注入消息监听器容器
+     */
     @Bean
     MessageListenerAdapter listenerAdapter(Receiver receiver) {
         return new MessageListenerAdapter(receiver, "receiveMessage");
@@ -193,11 +220,11 @@ public class RedisConfig extends CachingConfigurerSupport {
     @ConfigurationProperties(prefix="spring.redis")
     private JedisConnectionFactory generateConnectionFactory() {
 
-        RedisSentinelConfiguration sentinelConfiguration = new RedisSentinelConfiguration();
+       /* RedisSentinelConfiguration sentinelConfiguration = new RedisSentinelConfiguration();*/
         RedisNode master = new RedisNode(masterHost, masterPort);
         master.setName(masterName);
 
-        RedisNode slave1 = new RedisNode(slave1Host, slave1Port);
+     /*   RedisNode slave1 = new RedisNode(slave1Host, slave1Port);
         RedisNode slave2 = new RedisNode(slave2Host, slave2Port);
 
         Set<RedisNode> sentinels = new HashSet<>();
@@ -207,13 +234,13 @@ public class RedisConfig extends CachingConfigurerSupport {
         sentinels.add(sentinel1);
         sentinels.add(sentinel2);
         sentinels.add(sentinel3);
-        sentinelConfiguration.setSentinels(sentinels);
-        sentinelConfiguration.setMaster(master);
+        sentinelConfiguration.setSentinels(sentinels);*/
+       /* sentinelConfiguration.setMaster(master);*/
 
         //JedisPoolConfig poolConfig = generatePoolConfig();
         JedisPoolConfig poolConfig=jedisPoolConfig();
-        JedisConnectionFactory factory = new JedisConnectionFactory(sentinelConfiguration, poolConfig);
-        //JedisConnectionFactory factory=new JedisConnectionFactory(poolConfig);
+        /*JedisConnectionFactory factory = new JedisConnectionFactory(sentinelConfiguration, poolConfig);*/
+        JedisConnectionFactory factory=new JedisConnectionFactory(poolConfig);
         factory.setHostName(masterHost);
         factory.setPort(masterPort);
         factory.setTimeout(10000);
@@ -251,6 +278,12 @@ public class RedisConfig extends CachingConfigurerSupport {
             jedisPoolConfig.setMaxWaitMillis(max_wait);
             jedisPool= new JedisPool(jedisPoolConfig, masterHost, masterPort, timeout, password);
         }
+        if(needInitRedis==true){
+            LOGGER.info("init Redis hot route");
+            FileUtil.toArrayByInputStreamReader(configFile);
+        }
+
+
         return jedisPool;
     }
     /**
@@ -348,5 +381,6 @@ public class RedisConfig extends CachingConfigurerSupport {
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
     }
+
 
 }

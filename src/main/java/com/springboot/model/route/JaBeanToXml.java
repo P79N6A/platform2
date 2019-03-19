@@ -1,4 +1,4 @@
-package com.springboot.model.bean;
+package com.springboot.model.route;
 
 
 import javax.xml.bind.annotation.XmlElement;

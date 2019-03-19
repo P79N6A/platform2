@@ -1,15 +1,10 @@
 package com.springboot.model.route;
 
-import com.springboot.model.bean.XmlElementAnno;
-import lombok.Data;
-import org.apache.poi.ss.formula.functions.T;
-
 import javax.persistence.Column;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
-
 
 @XmlRootElement(name = "routemsg")
 public class RouteMsg implements Serializable {
@@ -21,6 +16,14 @@ public class RouteMsg implements Serializable {
 
      */
     String channelDate;
+    @XmlElement(name = "creater")
+    @Column(name = "creater")
+    @XmlElementAnno
+    /**
+     * 处理者
+
+     */
+    String creater;
 
     /**
      * 格式为 HHMMSSNNN
@@ -39,6 +42,10 @@ public class RouteMsg implements Serializable {
     @XmlElementAnno
     String channelSeq;
 
+    @XmlElement(name = "material")
+    @Column(name = "material")
+    @XmlElementAnno
+    String material;
     /**
      * 渠道系统标识:合作方系统标识
      */
@@ -71,9 +78,36 @@ public class RouteMsg implements Serializable {
     @XmlElementAnno
     String msg;
 
+
+    @XmlElement(name = "callbackUrl")
+    @Column(name = "callbackUrl")
+    @XmlElementAnno
+    String callbackUrl;
+
+    @XmlElement(name = "result")
+    @Column(name = "result")
+    @XmlElementAnno
+    String result;
+
+    @XmlTransient
+    public String getCreater() {
+        return creater;
+    }
+    @XmlTransient
+    public String getCallbackUrl() {
+        return callbackUrl;
+    }
     @XmlTransient
     public String getMsg() {
         return msg;
+    }
+    @XmlTransient
+    public String getResult() {
+        return result;
+    }
+    @XmlTransient
+    public String getMaterial() {
+        return material;
     }
     @XmlTransient
     public String getChannelCode() {
@@ -122,5 +156,17 @@ public class RouteMsg implements Serializable {
     }
     public void setPlatformCode(String platformCode) {
         this.platformCode = platformCode;
+    }
+    public void setMaterial(String material) {
+        this.material = material;
+    }
+    public void setCallbackUrl(String callbackUrl) {
+        this.callbackUrl = callbackUrl;
+    }
+    public void setResult(String result) {
+        this.result = result;
+    }
+    public void setCreater(String creater) {
+        this.creater = creater;
     }
 }

@@ -9,12 +9,14 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.CountDownLatch;
@@ -28,7 +30,11 @@ public class SocketServer {
     ACKTCPClientService acktcpClientService;*/
     // 日志
     private static final Logger LOGGER = LoggerFactory.getLogger(SocketServer.class);
-
+    /**
+     *  放入平台正在处理中队列
+     */
+    @Value("${PLATFORM_CHANNEL_NAME_Processing}")
+    String PLATFORM_CHANNEL_NAME_Processing;
     /**
      * 启动socket服务，开启监听
      * @param port
@@ -58,23 +64,25 @@ public class SocketServer {
                     while((len = is.read(buff)) != -1){
                         all = ArrayUtils.addAll(all,ArrayUtils.subarray(buff,0,len));
                     }
+                    //socket.shutdownInput();//关闭输入流
                     String reqxml = new String(all, "gbk");
                     RouteService routeService = SpringUtil.getBean(RouteService.class);
-                    //本地处理
-                    String result=routeService.process(reqxml);
 
+                    //本地转发处理
+                    String result=routeService.process(reqxml);
+                    //放入本机消息队列进行异步写入，沉淀数据
                      if(reqxml.contains("<sourcemsg>")) {
-                         System.out.println("将收到的源消息放入队列");
+                         System.out.println("将收到的源消息放入平台正在处理中队列");
                          StringRedisTemplate template = SpringUtil.getBean(StringRedisTemplate.class);
                          CountDownLatch latch = SpringUtil.getBean(CountDownLatch.class);
-                         template.convertAndSend("msg", reqxml);
+                         template.convertAndSend(PLATFORM_CHANNEL_NAME_Processing, reqxml);
                          try {
                              //发送消息连接等待中
-                             System.out.println("消息正在发送...");
+                             System.out.println("消息放入平台正在处理中队列正在发送...");
 
                              latch.await();
                          } catch (InterruptedException e) {
-                             System.out.println("消息发送失败...");
+                             System.out.println("消息放入平台正在处理中队列发送失败...");
                          }
                      }
                   /*   if(reqxml.contains("<ackMsg>")){
@@ -86,20 +94,23 @@ public class SocketServer {
                              LOGGER.error("银行处理完毕后回复场景平台出错，出错信息："+e.getMessage());
                          }
                      }*/
+                    result="platform has received info.";
+
                     if(!result.equals("")) {
                         byte[] bstream = result.getBytes("GBK");  //转化为字节流
                         os = socket.getOutputStream();   //输出流
                         os.write(bstream);
                         os.flush();//调用flush()方法将缓冲输出
+
+                        LOGGER.info("from platform return platform info");
                     }else{
                         LOGGER.info("from bank return blank info");
                     }
-
                 } catch (IOException e) {
                     LOGGER.error(e.getMessage());
                 }finally{
                     //关闭资源
-                    try {
+                   try {
                         if(os!=null) {
                             os.close();
                         }
@@ -107,7 +118,7 @@ public class SocketServer {
                             is.close();
                         }
 
-                    } catch (IOException e) {
+                   } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }

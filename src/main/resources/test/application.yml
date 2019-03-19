@@ -1,0 +1,191 @@
+server:
+  context-path: /web
+  port: 8090
+socketServer:
+  port: 5000
+  IP: 10.29.32.86
+hsdestSocketServer:
+  port: 5002
+  IP: 10.29.32.89
+xwdestSocketServer:
+   port: 5001
+   IP: 10.29.32.90
+channelCallbackUrl: http://10.29.32.85:8099/channel-1.0-SNAPSHOT/rst/callbackByPlatform.do
+platformCallbackUrl: http://10.29.32.86:8090/web/redis/api/callbackFromBank
+XW_CHANNEL_NAME: XWProcessQueue
+HS_CHANNEL_NAME: HSProcessQueue
+PLATFORM_CHANNEL_NAME_Processed: PlatformProcessedQueue
+PLATFORM_CHANNEL_NAME_Processing: PlatformProcessingQueue
+PLATFORM_CHANNEL_NAME: platformProcessQueue
+
+#vue静态资源
+vus.static.resources: /app/test/service/
+#首页图片静态资源配置
+app_home_picture_file_path: ${vus.static.resources}/pictureTest/
+# redisson
+redisson:
+   address: redis://10.29.30.28:6379
+   password:
+# jwt config
+jwt:
+   secret: 61D73234C4F93E03074D74D74D1E39D9
+   expire: 2592000
+ #rabbitmq配置
+rabbitmq:
+   connection:
+     host: 127.0.0.1
+     port: 15672
+     user: guest
+     password: guest
+     virtual-host: /
+   exchange: amq.topic
+   queue:
+     var1: cards
+     var2: timebank
+
+
+#哨兵模式
+   master-name: mymaster
+#redisson.password=
+#redisson.sentinel-addresses=10.47.91.83:26379,10.47.91.83:26380,10.47.91.83:26381
+spring:
+  countDownLatch: 1
+#mongodb note:mongo3.x will not use host and port,only use uri
+
+  data.mongodb.uri: mongodb://localhost:27017/test
+#elasticsearch 配置
+#spring.data.elasticsearch.repositories.enabled = true
+#spring.data.elasticsearch.cluster-nodes = 127.0.0.1:9300
+  datasource:
+    druid:
+      # 数据库访问配置, 使用druid数据源
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://10.29.30.110:3306/test
+      username: root
+      password: slms123456
+      # 连接池配置
+      initial-size: 5
+      min-idle: 5
+      max-active: 200
+      # 连接等待超时时间
+      max-wait: 30000
+      # 配置检测可以关闭的空闲连接间隔时间
+      time-between-eviction-runs-millis: 60000
+      # 配置连接在池中的最小生存时间
+      min-evictable-idle-time-millis: 300000
+      validation-query: select '1' from dual
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      log-slow-sql: true
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      pool-prepared-statements: true
+      max-open-prepared-statements: 20
+      max-pool-prepared-statement-per-connection-size: 20
+      # 配置监控统计拦截的filters, 去掉后监控界面sql无法统计, 'wall'用于防火墙
+      filters: stat,wall
+      # Spring监控AOP切入点，如x.y.z.service.*,配置多个英文逗号分隔
+      aop-patterns: com.springboot.servie.*
+      
+    
+      # WebStatFilter配置
+      web-stat-filter:
+        enabled: true
+        # 添加过滤规则
+        url-pattern: /*
+        # 忽略过滤的格式
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+      
+      # StatViewServlet配置 
+      stat-view-servlet:
+        enabled: true
+        # 访问路径为/druid时，跳转到StatViewServlet
+        url-pattern: /druid/*
+        # 是否能够重置数据
+        reset-enable: false
+        # 需要账号密码才能访问控制台
+        login-username: druid
+        login-password: druid123
+        # IP白名单
+        # allow: 127.0.0.1
+        #　IP黑名单（共同存在时，deny优先于allow）
+        # deny: 192.168.1.218
+      
+      # 配置StatFilter
+      filter: 
+        stat: 
+          log-slow-sql: true
+          
+  redis:
+# Redis数据库索引（默认为0）
+    database: 0
+# Redis服务器地址与端口
+    master:
+      host: 10.29.30.28
+      port: 6379
+    slave1:
+      host: localhost
+      port: 6380
+    slave2:
+      host: localhost
+      port: 6381
+
+
+    password:
+    defaultExpiration: 5000
+    master.name: mymaster
+    sentinel1:
+      host: localhost
+      port: 18890
+    sentinel2:
+      host: localhost
+      port: 18891
+    sentinel3:
+      host: localhost
+      port: 18892
+    pool:
+# 连接池最大连接数（使用负值表示没有限制）
+      max-active: 8
+      # 连接池最大阻塞等待时间（使用负值表示没有限制）
+      max-wait: -1
+      # 连接池中的最大空闲连接
+      max-idle: 8
+      # 连接池中的最小空闲连接
+      min-idle: 0
+    # 连接超时时间（毫秒）
+      timeout: 0
+
+    
+          
+logging:
+  level:
+    com:
+      springboot:
+        mapper: debug
+
+myProps: #自定义的属性和值
+  simpleProp: simplePropValue
+  arrayProps: 1,2,3,4,5
+  listProp1:
+    - name: abc
+      value: abcValue
+    - name: efg
+      value: efgValue
+  listProp2:
+    - config2Value1
+    - config2Vavlue2
+  mapProps:
+    key1: value1
+    key2: value2
+# mybatis 配置
+mybatis:
+   config-locations: mybatis/mybatis-config.xml
+   mapper-locations: mybatis/mapping/*.xml
+   type-aliases-package: com.springboot.model
+security:
+   allowedRoutes: /**
+   allowedHeaders: Origin, No-Cache, x-auth-token, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type,Authorization
+initRedis:
+   needed: true
+   configFile: /softs/routerule.config

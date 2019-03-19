@@ -2,22 +2,100 @@ package com.springboot.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.*;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
  *  Administrator on 2017/3/1 14:57.
  */
+@Service
 public abstract class IRedisService<T> {
     @Autowired
-    protected RedisTemplate<String, Object> redisTemplate;
+    protected RedisTemplate<String, Object> redisTemplate=new RedisTemplate<String,Object>();
     @Resource
-    protected HashOperations<String, String, T> hashOperations;
+    protected HashOperations<String, String, T> hashOperations=new HashOperations<String, String, T>() {
+        @Override
+        public Long delete(String s, Object... objects) {
+            return null;
+        }
+
+        @Override
+        public Boolean hasKey(String s, Object o) {
+            return null;
+        }
+
+        @Override
+        public T get(String s, Object o) {
+            return null;
+        }
+
+        @Override
+        public List<T> multiGet(String s, Collection<String> collection) {
+            return null;
+        }
+
+        @Override
+        public Long increment(String s, String s2, long l) {
+            return null;
+        }
+
+        @Override
+        public Double increment(String s, String s2, double v) {
+            return null;
+        }
+
+        @Override
+        public Set<String> keys(String s) {
+            return null;
+        }
+
+        @Override
+        public Long size(String s) {
+            return null;
+        }
+
+        @Override
+        public void putAll(String s, Map<? extends String, ? extends T> map) {
+
+        }
+
+        @Override
+        public void put(String s, String s2, T t) {
+
+        }
+
+        @Override
+        public Boolean putIfAbsent(String s, String s2, T t) {
+            return null;
+        }
+
+        @Override
+        public List<T> values(String s) {
+            return null;
+        }
+
+        @Override
+        public Map<String, T> entries(String s) {
+            return null;
+        }
+
+        @Override
+        public Cursor<Map.Entry<String, T>> scan(String s, ScanOptions scanOptions) {
+            return null;
+        }
+
+        @Override
+        public RedisOperations<String, ?> getOperations() {
+            return null;
+        }
+    };
 
     /**
      * 存入redis中的key

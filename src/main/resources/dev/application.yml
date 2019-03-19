@@ -4,12 +4,20 @@ server:
 socketServer:
   port: 5000
   IP: localhost
-destSocketServer:
-  port: 5001
+hsdestSocketServer:
+  port: 5002
   IP: localhost
-ackSocketServer:
-  port: 4999
-  IP: localhost
+xwdestSocketServer:
+   port: 5001
+   IP: localhost
+channelCallbackUrl: http://localhost:8099/rst/callbackByPlatform.do
+platformCallbackUrl: http://localhost:8090/web/redis/api/callbackFromBank
+XW_CHANNEL_NAME: XWProcessQueue
+HS_CHANNEL_NAME: HSProcessQueue
+PLATFORM_CHANNEL_NAME_Processed: PlatformProcessedQueue
+PLATFORM_CHANNEL_NAME_Processing: PlatformProcessingQueue
+PLATFORM_CHANNEL_NAME: platformProcessQueue
+
 #vue静态资源
 vus.static.resources: /app/test/service/
 #首页图片静态资源配置
@@ -178,3 +186,6 @@ mybatis:
 security:
    allowedRoutes: /**
    allowedHeaders: Origin, No-Cache, x-auth-token, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type,Authorization
+initRedis:
+   needed: true
+   configFile: D:\\09.Spring-Boot-Redis-Cache-platform\\src\\main\\resources\\routerule.config

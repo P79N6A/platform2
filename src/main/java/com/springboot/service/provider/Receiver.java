@@ -15,13 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.concurrent.CountDownLatch;
 
 public class Receiver {
-    Logger log=LoggerFactory.getLogger(Receiver.class);
+    Logger logger=LoggerFactory.getLogger(Receiver.class);
     private CountDownLatch latch;
-
     @Autowired
-    private StudentService service;
-    @Autowired
-    private RouteService routeService;
+    StudentService studentService;
     @Autowired
     private SourceMsgService sourceMsgService;
     public Receiver(CountDownLatch latch) {
@@ -29,28 +26,26 @@ public class Receiver {
     }
 
     public void receiveMessage(String message) {
-        System.out.println("Received <" + message + ">");
+        logger.info("in platform Receiver:receiveMessage---<" + message + ">");
+        RouteService routeService = SpringUtil.getBean(RouteService.class);
 
-        /*HSChannelService hsChannelService = SpringUtil.getBean(HSChannelService.class);
-                    String respxml =  hsChannelService.handle(reqxml);*/
-
-
+        //本地转发处理
+        String result = routeService.process(message);
+        logger.info("in platform Receiver:receiveMessage--routeService.process-"+result);
         //异步写入
-        StudentService studentService = SpringUtil.getBean(StudentService.class);
         SourceMsg sourceMsg = (SourceMsg) JaXmlBeanUtil.parseXmlToBean(SourceMsg.class,message);
-        /*String studentxml = sourceMsg.getMsg();
+        String studentxml = sourceMsg.getMsg();
         Student student=(Student) JaXmlBeanUtil.parseXmlToBean(Student.class,studentxml);
-        int i = studentService.add(student);*/
-        int i=sourceMsgService.add(sourceMsg);
-
-        String result;
+        int i = studentService.add(student);
         if (i == 1) {
-            result = " platform add into db success!";
+            result = " platform add studentInfo into db success!";
         } else {
-            result = "platform fail!";
+            result = "platform add studentInfo into db fail!";
         }
+        logger.info("in platform Receiver:receiveMessage---"+result);
 
 
+        logger.info("in platform Receiver:receiveMessage---"+result);
         latch.countDown();
 
 

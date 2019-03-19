@@ -4,25 +4,29 @@ import com.springboot.model.bean.Student;
 import com.springboot.service.StudentService;
 import com.springboot.util.SpringUtil;
 import com.springboot.util.XmlUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.JedisPubSub;
 @Service
 public class MyListener extends JedisPubSub {
-
+    Logger logger= LoggerFactory.getLogger(MyListener.class);
      @Override
     // 取得订阅的消息后的处理
     public void onMessage(String channel, String message) {
+         logger.info("platform process MyListener:onMessage --begin :");
         System.out.println(channel + "=" + message);
         String result="";
         Object student= XmlUtil.xmlToBean2(message,Student.class);
          StudentService studentService = SpringUtil.getBean(StudentService.class);
             int i = studentService.add((Student) student);
             if (i == 1) {
-                result = "add into db success!";
+                result = "platform add into db success!";
             } else {
-                result = "fail!";
+                result = "platform add into db fail!";
             }
             System.out.print(result);
+         logger.info("platform process MyListener:onMessage --end :"+result);
     }
      @Override
     // 初始化订阅时候的处理

@@ -6,6 +6,7 @@ import com.springboot.service.IRedisService;
 import com.springboot.service.StudentService;
 import com.springboot.service.impl.RedisServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -18,6 +19,7 @@ public class StudentController {
 	@Autowired
 	private StudentService studentService;
 	@Autowired
+	@Qualifier("redisServiceImpl")
     private IRedisService redisService;
 	@Autowired
 	private RedisServiceImpl service;

@@ -11,12 +11,12 @@ import java.net.Socket;
 
 @Configuration
 public class DestSocketConfig {
-    @Value("${destSocketServer.port}")
+    @Value("${hsdestSocketServer.port}")
     /**
     端口号
      */
     public  int port;
-    @Value("${destSocketServer.IP}")
+    @Value("${hsdestSocketServer.IP}")
     /**
      * 服务器端ip地址
      */

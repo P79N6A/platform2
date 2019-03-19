@@ -1,4 +1,4 @@
-package com.springboot.model.bean;
+package com.springboot.model.route;
 
 import java.lang.annotation.*;
 
